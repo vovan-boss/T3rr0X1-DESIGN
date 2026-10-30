@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T3rr0X1 DESIGN</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090711;color:white;font-family:Arial,sans-serif;padding:20px}
+.app{max-width:480px;margin:auto}
+header{text-align:center;padding:25px 0}
+header h1{color:#b879ff;font-size:29px;text-shadow:0 0 20px #923cff;margin:0}
+header p{color:#aaa}
+h2{font-size:21px;margin-top:25px}
+.card{background:#191326;border:1px solid #382451;border-radius:17px;padding:18px;margin-bottom:13px}
+.service{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.price{color:#c18aff;font-weight:bold}
+.small{color:#aaa;font-size:13px;margin-top:6px}
+button{border:0;border-radius:12px;padding:15px;background:linear-gradient(100deg,#7028bd,#ad54ff);color:white;font-weight:bold;font-size:15px;width:100%;cursor:pointer}
+nav{display:flex;gap:8px;margin:20px 0}
+nav button{background:#21172e;font-size:13px;padding:12px 5px}
+nav button.active{background:#8036c9}
+.page{display:none}
+.page.active{display:block}
+input,textarea{width:100%;padding:14px;background:#100c19;border:1px solid #49305f;border-radius:12px;color:white;font-size:15px;margin:10px 0}
+textarea{min-height:110px;resize:vertical}
+.total{display:flex;justify-content:space-between;margin:20px 0;font-size:18px}
+.total strong{color:#c18aff}
+footer{text-align:center;color:#777;font-size:12px;padding:25px 0}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<h1>T3rr0X1 DESIGN</h1>
+<p>Твой стиль — наша работа</p>
+</header>
+
+<nav>
+<button class="active" onclick="showPage('home',this)">Главная</button>
+<button onclick="showPage('catalog',this)">Каталог</button>
+<button onclick="showPage('portfolio',this)">Портфолио</button>
+<button onclick="showPage('cart',this)">Заказ</button>
+</nav>
+
+<section id="home" class="page active">
+<div class="card">
+<h2>Добро пожаловать!</h2>
+<p>Создаём дизайн по твоим пожеланиям.</p>
+<button onclick="showPage('catalog',document.querySelectorAll('nav button')[1])">Выбрать услугу</button>
+</div>
+<h2>Наши услуги</h2>
+<div class="card">🎨 Аватарки<div class="small">От 30 ₽</div></div>
+<div class="card">⚡ Логотипы<div class="small">От 50 ₽</div></div>
+<div class="card">🛍️ Карточки товаров<div class="small">От 100 ₽</div></div>
+</section>
+
+<section id="catalog" class="page">
+<h2>Каталог услуг</h2>
+<div class="card service" onclick="addService('Аватарка',30)">
+<div>🎨 Аватарка<div class="small">Дизайн профиля</div></div>
+<span class="price">30 ₽</span>
+</div>
+<div class="card service" onclick="addService('Логотип',50)">
+<div>⚡ Логотип<div class="small">Для проекта или бренда</div></div>
+<span class="price">50 ₽</span>
+</div>
+<div class="card service" onclick="addService('Карточка товара',100)">
+<div>🛍️ Карточка товара<div class="small">Для маркетплейса</div></div>
+<span class="price">100 ₽</span>
+</div>
+</section>
+
+<section id="portfolio" class="page">
+<h2>Портфолио</h2>
+<div class="card">
+<p>Здесь будут размещаться твои готовые работы.</p>
+<div class="small">Скоро появятся примеры дизайна.</div>
+</div>
+</section>
+
+<section id="cart" class="page">
+<h2>Оформление заказа</h2>
+<div class="card">
+<div id="selected">Услуга пока не выбрана</div>
+<div class="total"><span>Итого:</span><strong id="total">0 ₽</strong></div>
+</div>
+<textarea id="description" placeholder="Опиши, какой дизайн тебе нужен..."></textarea>
+<input id="contact" placeholder="Дополнительная информация (необязательно)">
+<button onclick="sendOrder()">Отправить заказ</button>
+</section>
+
+<footer>T3rr0X1 DESIGN © 2026</footer>
+</div>
+
+<script>
+const tg=window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+
+let order=null;
+
+function showPage(id,button){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+if(button)button.classList.add('active');
+}
+
+function addService(name,price){
+order={name,price};
+document.getElementById('selected').textContent=name;
+document.getElementById('total').textContent=price+' ₽';
+showPage('cart',document.querySelectorAll('nav button')[3]);
+}
+
+function sendOrder(){
+if(!order){
+tg.showAlert('Сначала выбери услугу!');
+return;
+}
+const description=document.getElementById('description').value.trim();
+if(!description){
+tg.showAlert('Опиши свой заказ!');
+return;
+}
+const data={
+type:order.name,
+price:order.price,
+description:description,
+contact:document.getElementById('contact').value.trim()
+};
+tg.sendData(JSON.stringify(data));
+}
+</script>
+</body>
